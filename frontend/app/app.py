@@ -536,7 +536,7 @@ def generate_token(length=6):
     characters = string.ascii_letters + string.digits
     return ''.join(random.choice(characters) for _ in range(length))
 
-# Executar o aplicativo
-if __name__ == '__main__':
-    #db.create_all()  # Cria as tabelas no banco de dados
-    app.run(debug=True)
+# # Executar o aplicativo
+# if __name__ == '__main__':
+#     #db.create_all()  # Cria as tabelas no banco de dados
+#     app.run(debug=True)
