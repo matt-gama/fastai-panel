@@ -6,7 +6,7 @@ services:
     working_dir: /app
     volumes:
       - ./frontend:/app
-    command: flask run --host=0.0.0.0 --port=5000
+    command: sh -c "pip install -r /app/requirements.txt && flask run --host=0.0.0.0 --port=5000"
     environment:
       - DATABASE_URL=postgresql://postgres.pnauqlmifcednipdbgda:uVCJ1hIC9onIrBnh@aws-0-sa-east-1.pooler.supabase.com:6543/postgres
       - FERNET_KEY=8iKG44o_iy7RiQ0uKslnFJ3RuqcFsDFfg7QmaC1kjC4=
@@ -21,7 +21,7 @@ services:
     working_dir: /app
     volumes:
       - ./backend:/app
-    command: uvicorn app.main:app --host 0.0.0.0 --port 8001
+    command: sh -c "pip install -r /app/requirements.txt && uvicorn app.main:app --host 0.0.0.0 --port 8000"
     environment:
       - DATABASE_URL=postgresql://postgres.pnauqlmifcednipdbgda:uVCJ1hIC9onIrBnh@aws-0-sa-east-1.pooler.supabase.com:6543/postgres
       - FERNET_KEY=8iKG44o_iy7RiQ0uKslnFJ3RuqcFsDFfg7QmaC1kjC4=
@@ -30,12 +30,6 @@ services:
     ports:
       - "8001:8001"
 
-  nginx:
-    image: nginx:latest
-    volumes:
-      - ./nginx.conf:/etc/nginx/nginx.conf
-    ports:
-      - "80:80"
 
 networks:
   default:
