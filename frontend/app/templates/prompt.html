@@ -1,0 +1,1019 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="prompts-container">
+	{% if prompts|length < 0 %}
+    <div class="dashboard-header">
+        <h1>Lista de Prompts</h1>
+        <button class="btn-add" data-toggle="modal" data-target="#newPromptModal">
+            <svg class="icon" viewBox="0 0 24 24">
+                <path fill="currentColor" d="M19,13H13V19H11V13H5V11H11V5H13V11H19V13Z" />
+            </svg>
+            <span>Adicionar Novo Prompt</span>
+        </button>
+    </div>
+	{% endif %}
+
+    <!-- Modal para Adicionar Novo Prompt -->
+    <div class="modal-overlay" id="newPromptModal" tabindex="-1" aria-labelledby="newPromptModalLabel" aria-hidden="true">
+        <div class="modal-container">
+            <div class="modal-content">
+                <form id="newPromptForm" method="POST" action="">
+                    <div class="modal-header">
+                        <h3 class="modal-title" id="newPromptModalLabel">Adicionar Novo Prompt</h3>
+                        <button type="button" class="modal-close" data-dismiss="modal" aria-label="Fechar">
+                            <svg viewBox="0 0 24 24" class="icon">
+                                <path fill="currentColor" d="M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z" />
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <!-- Select para IA -->
+                        <div class="form-group">
+                            <label for="iaSelect">IA</label>
+                            <select class="form-select" id="iaSelect" name="ia_id" required>
+                                {% for ia in unique_ias %}
+                                <option value="{{ ia.id }}">{{ ia.ia_name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <!-- Textarea para o prompt -->
+                        <div class="form-group">
+                            <label for="newPromptText">Texto do Prompt</label>
+                            <textarea class="form-textarea" id="newPromptText" name="text" rows="10" required></textarea>
+                        </div>
+                        <!-- Radio buttons para status -->
+                        <div class="form-group">
+                            <label>Status</label>
+                            <div class="radio-group">
+                                <label class="radio-label">
+                                    <input type="radio" name="status" id="newPromptStatusTrue" value="True" checked />
+                                    <span class="radio-text">Ativo</span>
+                                </label>
+                                <label class="radio-label">
+                                    <input type="radio" name="status" id="newPromptStatusFalse" value="False" />
+                                    <span class="radio-text">Inativo</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn-secondary" data-dismiss="modal">Fechar</button>
+                        <button type="submit" class="btn-primary">Adicionar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+	{% if prompts|length == 0 %}
+	<div class="empty-prompt-state">
+		<div class="model-container">
+			<!-- Modelo 3D animado -->
+			<div class="prompt-model">
+				<div class="prompt-icon">
+					<svg viewBox="0 0 24 24" width="120" height="120">
+						<path fill="currentColor" d="M20,2H4A2,2 0 0,0 2,4V22L6,18H20A2,2 0 0,0 22,16V4A2,2 0 0,0 20,2M6,9H18V11H6M14,14H6V12H14M18,8H6V6H18" />
+					</svg>
+					<div class="shadow-element"></div>
+				</div>
+			</div>
+		</div>
+		<h2>Nenhum Prompt Criado</h2>
+		<p>Você ainda não possui nenhum prompt criado. Crie prompts personalizados para melhorar a comunicação da sua IA.</p>
+		<button class="btn-add" onclick="openModal('newPromptModal')">
+			<svg class="icon" viewBox="0 0 24 24">
+				<path fill="currentColor" d="M19,13H13V19H11V13H5V11H11V5H13V11H19V13Z" />
+			</svg>
+			<span>Criar Novo Prompt</span>
+		</button>
+		
+		<div class="prompt-suggestions">
+			<h3>Sugestões de Prompts</h3>
+			<div class="suggestions-grid">
+				<div class="suggestion-item">
+					<div class="suggestion-icon">
+						<svg viewBox="0 0 24 24">
+							<path fill="currentColor" d="M12,5.5A3.5,3.5 0 0,1 15.5,9A3.5,3.5 0 0,1 12,12.5A3.5,3.5 0 0,1 8.5,9A3.5,3.5 0 0,1 12,5.5M5,8C5.56,8 6.08,8.15 6.53,8.42C6.38,9.85 6.8,11.27 7.66,12.38C7.16,13.34 6.16,14 5,14A3,3 0 0,1 2,11A3,3 0 0,1 5,8M19,8A3,3 0 0,1 22,11A3,3 0 0,1 19,14C17.84,14 16.84,13.34 16.34,12.38C17.2,11.27 17.62,9.85 17.47,8.42C17.92,8.15 18.44,8 19,8M5.5,18.25C5.5,16.18 8.41,14.5 12,14.5C15.59,14.5 18.5,16.18 18.5,18.25V20H5.5V18.25M0,20V18.5C0,17.11 1.89,15.94 4.45,15.6C3.86,16.28 3.5,17.22 3.5,18.25V20H0M24,20H20.5V18.25C20.5,17.22 20.14,16.28 19.55,15.6C22.11,15.94 24,17.11 24,18.5V20Z" />
+						</svg>
+					</div>
+					<h4>Atendimento ao Cliente</h4>
+					<p>"Você é um assistente de atendimento ao cliente para uma loja de..."</p>
+				</div>
+				<div class="suggestion-item">
+					<div class="suggestion-icon">
+						<svg viewBox="0 0 24 24">
+							<path fill="currentColor" d="M20,17A2,2 0 0,0 22,15V4A2,2 0 0,0 20,2H9.46C9.81,2.61 10,3.3 10,4H20V15H11V17M15,7V9H9V22H7V16H5V22H3V14H1.5V9A2,2 0 0,1 3.5,7H15M8,4A2,2 0 0,1 6,6A2,2 0 0,1 4,4A2,2 0 0,1 6,2A2,2 0 0,1 8,4Z" />
+						</svg>
+					</div>
+					<h4>Vendas</h4>
+					<p>"Você é um consultor de vendas especializado em..."</p>
+				</div>
+				<div class="suggestion-item">
+					<div class="suggestion-icon">
+						<svg viewBox="0 0 24 24">
+							<path fill="currentColor" d="M12,3L1,9L12,15L21,10.09V17H23V9M5,13.18V17.18L12,21L19,17.18V13.18L12,17L5,13.18Z" />
+						</svg>
+					</div>
+					<h4>Educacional</h4>
+					<p>"Você é um professor que explica conceitos de forma simples..."</p>
+				</div>
+				<div class="suggestion-item">
+					<div class="suggestion-icon">
+						<svg viewBox="0 0 24 24">
+							<path fill="currentColor" d="M18.36,2.16C20,2.16 21.36,3.5 21.36,5.16V6.04C21.36,6.58 21.16,7.12 20.76,7.5L19.82,8.5L21.83,10.5C22.27,10.94 22.27,11.64 21.83,12.07L20.75,13.16L21.83,14.24C22.27,14.68 22.27,15.38 21.83,15.82L17.24,20.41C16.8,20.85 16.1,20.85 15.66,20.41L14.58,19.33L13.5,20.41C13.06,20.85 12.36,20.85 11.92,20.41L7.33,15.82C6.89,15.38 6.89,14.68 7.33,14.24L8.41,13.16L7.33,12.07C6.89,11.64 6.89,10.94 7.33,10.5L9.34,8.5L8.4,7.5C8,7.12 7.8,6.58 7.8,6.04V5.16C7.8,3.5 9.16,2.16 10.8,2.16H18.36M18.36,4.16H10.8A1,1 0 0,0 9.8,5.16V6.04C9.8,6.12 9.83,6.19 9.89,6.24L11.1,7.5C11.32,7.74 11.32,8.11 11.1,8.34L8.92,10.5L10.5,12.07L11.57,11L10.5,9.93C10.06,9.5 10.06,8.8 10.5,8.36L11.57,7.28L10.5,6.21C10.06,5.77 10.06,5.07 10.5,4.63L11.57,3.56L12.67,4.66C13.11,5.1 13.8,5.1 14.24,4.66L15.34,3.56L16.41,4.63C16.84,5.07 16.84,5.77 16.41,6.21L15.34,7.28L16.41,8.36C16.84,8.8 16.84,9.5 16.41,9.93L15.34,11L16.41,12.07L18,10.5L15.82,8.34C15.59,8.11 15.59,7.74 15.82,7.5L17.03,6.24C17.09,6.19 17.12,6.12 17.12,6.04V5.16A1,1 0 0,0 16.12,4.16H18.36Z" />
+						</svg>
+					</div>
+					<h4>Suporte Técnico</h4>
+					<p>"Você é um especialista técnico que ajuda a resolver problemas de..."</p>
+				</div>
+			</div>
+		</div>
+	</div>
+		{% else %}
+    <!-- Cards dos Prompts -->
+    <div class="prompt-grid">
+        {% for prompt in prompts %}
+        <div class="prompt-card">
+            <div class="prompt-card-header">
+                <div class="prompt-card-title">
+                    <h3>{{ prompt.ia_name }}</h3>
+                    <span class="status-badge {% if prompt.status %}status-active{% else %}status-inactive{% endif %}">
+                        {% if prompt.status %}Ativo{% else %}Inativo{% endif %}
+                    </span>
+                </div>
+                <div class="prompt-card-meta">
+                    <div class="meta-item">Criado: {{ prompt.created_at }}</div>
+                    <div class="meta-item">Atualizado: {{ prompt.updated_at }}</div>
+                </div>
+            </div>
+            <div class="prompt-card-body">
+                <div class="prompt-content">
+                    <textarea class="prompt-textarea" rows="10" readonly>{{ prompt.text }}</textarea>
+                </div>
+            </div>
+            <div class="prompt-card-footer">
+                <div class="prompt-actions">
+                    <!-- Botão de Editar -->
+                    <button class="btn-icon btn-edit" data-toggle="modal" data-target="#editPromptModal{{ prompt.id }}" title="Editar Prompt">
+                        <svg class="icon" viewBox="0 0 24 24">
+                            <path fill="currentColor" d="M20.71,7.04C21.1,6.65 21.1,6 20.71,5.63L18.37,3.29C18,2.9 17.35,2.9 16.96,3.29L15.12,5.12L18.87,8.87M3,17.25V21H6.75L17.81,9.93L14.06,6.18L3,17.25Z" />
+                        </svg>
+                    </button>
+                    <!-- Botão de Deletar -->
+                    <button class="btn-icon btn-delete" data-toggle="modal" data-target="#deletePromptModal{{ prompt.id }}" title="Deletar Prompt">
+                        <svg class="icon" viewBox="0 0 24 24">
+                            <path fill="currentColor" d="M19,4H15.5L14.5,3H9.5L8.5,4H5V6H19M6,19A2,2 0 0,0 8,21H16A2,2 0 0,0 18,19V7H6V19Z" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal para Editar Prompt -->
+        <div class="modal-overlay" id="editPromptModal{{ prompt.id }}" tabindex="-1" aria-labelledby="editPromptModalLabel{{ prompt.id }}" aria-hidden="true">
+            <div class="modal-container modal-lg">
+                <div class="modal-content">
+                    <form action="/edit-prompt/{{ prompt.id }}" method="POST">
+                        <div class="modal-header">
+                            <h3 class="modal-title" id="editPromptModalLabel{{ prompt.id }}">Editar Prompt - {{ prompt.ia_name }}</h3>
+                            <button type="button" class="modal-close" data-dismiss="modal" aria-label="Fechar">
+                                <svg viewBox="0 0 24 24" class="icon">
+                                    <path fill="currentColor" d="M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z" />
+                                </svg>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <!-- Textarea para o conteúdo do prompt -->
+                            <div class="form-group">
+                                <label for="promptText{{ prompt.id }}">Texto do Prompt</label>
+                                <textarea class="form-textarea" id="promptText{{ prompt.id }}" name="text" rows="10" required>{{ prompt.text }}</textarea>
+                            </div>
+                            <!-- Status com Radio Buttons -->
+                            <div class="form-group">
+                                <label>Status</label>
+                                <div class="radio-group">
+                                    <label class="radio-label">
+                                        <input type="radio" name="status" id="promptStatusTrue{{ prompt.id }}" value="True" {% if prompt.status %}checked{% endif %} />
+                                        <span class="radio-text">Ativo</span>
+                                    </label>
+                                    <label class="radio-label">
+                                        <input type="radio" name="status" id="promptStatusFalse{{ prompt.id }}" value="False" {% if not prompt.status %}checked{% endif %} />
+                                        <span class="radio-text">Inativo</span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn-secondary" data-dismiss="modal">Fechar</button>
+                            <button type="submit" class="btn-primary">Salvar</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal para Deletar Prompt -->
+        <div class="modal-overlay" id="deletePromptModal{{ prompt.id }}" tabindex="-1" aria-labelledby="deletePromptModalLabel{{ prompt.id }}" aria-hidden="true">
+            <div class="modal-container">
+                <div class="modal-content">
+                    <form action="/delete-prompt/{{ prompt.id }}" method="POST">
+                        <div class="modal-header">
+                            <h3 class="modal-title" id="deletePromptModalLabel{{ prompt.id }}">Confirmar Exclusão</h3>
+                            <button type="button" class="modal-close" data-dismiss="modal" aria-label="Fechar">
+                                <svg viewBox="0 0 24 24" class="icon">
+                                    <path fill="currentColor" d="M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z" />
+                                </svg>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="alert alert-danger">
+                                <p>Tem certeza que deseja excluir o prompt referente a <strong>{{ prompt.ia_name }}</strong>?</p>
+                                <p class="alert-small">Esta ação não pode ser desfeita.</p>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn-secondary" data-dismiss="modal">Cancelar</button>
+                            <button type="submit" class="btn-danger">Excluir</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+	{% endif %}
+</div>
+
+<style>
+    :root {
+        --primary: #255267;
+        --primary-dark: #1e4252;
+        --primary-light: #3a6a80;
+        --success: #28a745;
+        --success-dark: #218838;
+        --danger: #dc3545;
+        --danger-dark: #c82333;
+        --warning: #ffc107;
+        --warning-dark: #e0a800;
+        --secondary: #6c757d;
+        --secondary-dark: #5a6268;
+        --background: #ffffff;
+        --background-light: #f8f9fa;
+        --text: #333333;
+        --text-light: #6c757d;
+        --border: #e1e4e8;
+        --border-light: #f1f3f5;
+        --shadow: rgba(0, 0, 0, 0.1);
+    }
+
+    /* Container Principal */
+    .prompts-container {
+        padding: 1rem 0;
+    }
+
+/* Estilos para o estado vazio com animação 3D */
+.empty-prompt-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 3rem 2rem;
+    text-align: center;
+    background-color: var(--background);
+    border-radius: 1rem;
+    border: 1px solid var(--border-light);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    max-width: 800px;
+    margin: 2rem auto;
+}
+
+.empty-prompt-state h2 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--primary);
+    margin: 1.5rem 0 0.5rem;
+}
+
+.empty-prompt-state p {
+    font-size: 1rem;
+    color: var(--text-light);
+    margin-bottom: 2rem;
+    max-width: 500px;
+}
+
+/* Modelo 3D e animação */
+.model-container {
+    position: relative;
+    width: 200px;
+    height: 200px;
+    margin-bottom: 1rem;
+    perspective: 800px;
+}
+
+.prompt-model {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transform-style: preserve-3d;
+    animation: float 6s ease-in-out infinite;
+}
+
+.prompt-icon {
+    position: relative;
+    color: var(--primary);
+    transform-style: preserve-3d;
+    animation: rotate 12s linear infinite;
+}
+
+.shadow-element {
+    position: absolute;
+    bottom: -30px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80px;
+    height: 10px;
+    background-color: rgba(0, 0, 0, 0.1);
+    border-radius: 50%;
+    filter: blur(5px);
+    animation: shadow-pulse 6s ease-in-out infinite;
+}
+
+/* Botão de adicionar */
+.btn-add {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.5rem;
+    font-weight: 500;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: none;
+    outline: none;
+    background-color: var(--primary);
+    color: white;
+    box-shadow: 0 4px 6px rgba(37, 82, 103, 0.2);
+    margin-bottom: 2.5rem;
+}
+
+.btn-add:hover {
+    background-color: var(--primary-dark);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 8px rgba(37, 82, 103, 0.25);
+}
+
+.btn-add:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 4px rgba(37, 82, 103, 0.2);
+}
+
+/* Sugestões de Prompts */
+.prompt-suggestions {
+    width: 100%;
+}
+
+.prompt-suggestions h3 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--primary);
+    margin-bottom: 1.5rem;
+    text-align: center;
+}
+
+.suggestions-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+    width: 100%;
+}
+
+.suggestion-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 1.5rem 1rem;
+    border-radius: 0.75rem;
+    background-color: var(--background-light);
+    border: 1px solid var(--border);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    cursor: pointer;
+}
+
+.suggestion-item:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.08);
+    border-color: var(--primary-light);
+}
+
+.suggestion-icon {
+    width: 48px;
+    height: 48px;
+    color: var(--primary);
+    margin-bottom: 1rem;
+}
+
+.suggestion-item h4 {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 0.5rem;
+}
+
+.suggestion-item p {
+    font-size: 0.875rem;
+    color: var(--text-light);
+    margin: 0;
+    font-style: italic;
+}
+
+/* Animações */
+@keyframes float {
+    0% {
+        transform: translateY(0px) rotateX(0deg);
+    }
+    50% {
+        transform: translateY(-15px) rotateX(5deg);
+    }
+    100% {
+        transform: translateY(0px) rotateX(0deg);
+    }
+}
+
+@keyframes rotate {
+    0% {
+        transform: rotateY(0deg);
+    }
+    100% {
+        transform: rotateY(360deg);
+    }
+}
+
+@keyframes shadow-pulse {
+    0% {
+        opacity: 0.3;
+        transform: translateX(-50%) scale(0.8);
+    }
+    50% {
+        opacity: 0.5;
+        transform: translateX(-50%) scale(1);
+    }
+    100% {
+        opacity: 0.3;
+        transform: translateX(-50%) scale(0.8);
+    }
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+    .suggestions-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .empty-prompt-state {
+        padding: 2rem 1rem;
+    }
+}
+
+@media (min-width: 769px) and (max-width: 1024px) {
+    .suggestions-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+    /* Cabeçalho */
+    .dashboard-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid var(--border);
+    }
+
+    .dashboard-header h1 {
+        font-size: 1.75rem;
+        font-weight: 600;
+        color: var(--primary);
+        margin: 0;
+    }
+
+    /* Grid de Prompts */
+    .prompt-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(450px, 1fr));
+        gap: 1.5rem;
+    }
+
+    /* Card de Prompt */
+    .prompt-card {
+        background-color: white;
+        border-radius: 0.5rem;
+        box-shadow: 0 2px 8px var(--shadow);
+        overflow: hidden;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+    }
+
+    .prompt-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .prompt-card-header {
+        padding: 1rem;
+        border-bottom: 1px solid var(--border-light);
+    }
+
+    .prompt-card-title {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 0.5rem;
+    }
+
+    .prompt-card-title h3 {
+        font-size: 1.125rem;
+        font-weight: 600;
+        color: var(--primary);
+        margin: 0;
+    }
+
+    .prompt-card-meta {
+        font-size: 0.75rem;
+        color: var(--text-light);
+    }
+
+    .meta-item {
+        margin-bottom: 0.25rem;
+    }
+
+    .prompt-card-body {
+        padding: 1rem;
+        flex: 1;
+    }
+
+    .prompt-content {
+        height: 100%;
+    }
+
+    .prompt-textarea {
+        width: 100%;
+        height: 100%;
+        min-height: 200px;
+        padding: 0.75rem;
+        border: 1px solid var(--border);
+        border-radius: 0.375rem;
+        font-family: monospace;
+        font-size: 0.875rem;
+        resize: none;
+        background-color: var(--background-light);
+    }
+
+    .prompt-card-footer {
+        padding: 1rem;
+        border-top: 1px solid var(--border-light);
+        display: flex;
+        justify-content: flex-end;
+    }
+
+    .prompt-actions {
+        display: flex;
+        gap: 0.5rem;
+    }
+
+    /* Status Badge */
+    .status-badge {
+        padding: 0.25rem 0.5rem;
+        border-radius: 1rem;
+        font-size: 0.75rem;
+        font-weight: 600;
+    }
+
+    .status-active {
+        background-color: rgba(40, 167, 69, 0.1);
+        color: var(--success);
+    }
+
+    .status-inactive {
+        background-color: rgba(108, 117, 125, 0.1);
+        color: var(--secondary);
+    }
+
+    /* Botões */
+    .btn-add {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        padding: 0.5rem 1rem;
+        border-radius: 0.375rem;
+        font-weight: 500;
+        font-size: 0.875rem;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        border: none;
+        outline: none;
+        background-color: var(--success);
+        color: white;
+    }
+
+    .btn-add:hover {
+        background-color: var(--success-dark);
+        transform: translateY(-1px);
+        box-shadow: 0 2px 5px var(--shadow);
+    }
+
+    .btn-icon {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 2rem;
+        height: 2rem;
+        border-radius: 0.375rem;
+        border: none;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        background-color: transparent;
+    }
+
+    .btn-edit {
+        color: var(--warning);
+    }
+
+    .btn-edit:hover {
+        background-color: rgba(255, 193, 7, 0.1);
+    }
+
+    .btn-delete {
+        color: var(--danger);
+    }
+
+    .btn-delete:hover {
+        background-color: rgba(220, 53, 69, 0.1);
+    }
+
+    .btn-primary {
+        background-color: var(--primary);
+        color: white;
+        padding: 0.5rem 1rem;
+        border-radius: 0.375rem;
+        font-weight: 500;
+        font-size: 0.875rem;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        border: none;
+    }
+
+    .btn-primary:hover {
+        background-color: var(--primary-dark);
+        transform: translateY(-1px);
+        box-shadow: 0 2px 5px var(--shadow);
+    }
+
+    .btn-secondary {
+        background-color: var(--secondary);
+        color: white;
+        padding: 0.5rem 1rem;
+        border-radius: 0.375rem;
+        font-weight: 500;
+        font-size: 0.875rem;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        border: none;
+    }
+
+    .btn-secondary:hover {
+        background-color: var(--secondary-dark);
+    }
+
+    .btn-danger {
+        background-color: var(--danger);
+        color: white;
+        padding: 0.5rem 1rem;
+        border-radius: 0.375rem;
+        font-weight: 500;
+        font-size: 0.875rem;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        border: none;
+    }
+
+    .btn-danger:hover {
+        background-color: var(--danger-dark);
+    }
+
+    /* Ícones */
+    .icon {
+        width: 1.25rem;
+        height: 1.25rem;
+        flex-shrink: 0;
+    }
+
+    /* Formulários */
+    .form-group {
+        margin-bottom: 1rem;
+    }
+
+    .form-group label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-weight: 500;
+        color: var(--text);
+    }
+
+    .form-select {
+        width: 100%;
+        padding: 0.625rem;
+        border: 1px solid var(--border);
+        border-radius: 0.375rem;
+        font-size: 0.875rem;
+        transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .form-select:focus {
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px rgba(37, 82, 103, 0.1);
+        outline: none;
+    }
+
+    .form-textarea {
+        width: 100%;
+        padding: 0.625rem;
+        border: 1px solid var(--border);
+        border-radius: 0.375rem;
+        font-size: 0.875rem;
+        transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        resize: vertical;
+        min-height: 200px;
+        font-family: monospace;
+    }
+
+    .form-textarea:focus {
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px rgba(37, 82, 103, 0.1);
+        outline: none;
+    }
+
+    .radio-group {
+        display: flex;
+        gap: 1.5rem;
+    }
+
+    .radio-label {
+        display: flex;
+        align-items: center;
+        cursor: pointer;
+    }
+
+    .radio-label input {
+        margin-right: 0.5rem;
+    }
+
+    /* Modal Styles */
+    .modal-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: rgba(0, 0, 0, 0.5);
+        z-index: 1000;
+        overflow-y: auto;
+        padding: 2rem 1rem;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.3s ease, visibility 0.3s ease;
+    }
+
+    .modal-overlay.show {
+        opacity: 1;
+        visibility: visible;
+        display: flex;
+    }
+
+    .modal-container {
+        width: 100%;
+        max-width: 500px;
+        margin: auto;
+        background-color: white;
+        border-radius: 0.5rem;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        transform: translateY(-20px);
+        transition: transform 0.3s ease;
+    }
+
+    .modal-overlay.show .modal-container {
+        transform: translateY(0);
+    }
+
+    .modal-lg {
+        max-width: 700px;
+    }
+
+    .modal-content {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1rem;
+        border-bottom: 1px solid var(--border);
+    }
+
+    .modal-title {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: var(--primary);
+        margin: 0;
+    }
+
+    .modal-close {
+        background: transparent;
+        border: none;
+        cursor: pointer;
+        color: var(--text-light);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 2rem;
+        height: 2rem;
+        border-radius: 50%;
+        transition: background-color 0.2s ease;
+    }
+
+    .modal-close:hover {
+        background-color: var(--border-light);
+        color: var(--text);
+    }
+
+    .modal-body {
+        padding: 1rem;
+        overflow-y: auto;
+    }
+
+    .modal-footer {
+        display: flex;
+        justify-content: flex-end;
+        gap: 0.75rem;
+        padding: 1rem;
+        border-top: 1px solid var(--border);
+    }
+
+    /* Alert Styles */
+    .alert {
+        padding: 1rem;
+        border-radius: 0.375rem;
+        margin-bottom: 1rem;
+    }
+
+    .alert-danger {
+        background-color: rgba(220, 53, 69, 0.1);
+        border-left: 4px solid var(--danger);
+    }
+
+    .alert-small {
+        font-size: 0.875rem;
+        margin-top: 0.5rem;
+        color: var(--text-light);
+    }
+
+    /* Responsividade */
+    @media (max-width: 768px) {
+        .prompt-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        .dashboard-header {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 1rem;
+        }
+        
+        .dashboard-header h1 {
+            margin-bottom: 0.5rem;
+        }
+        
+        .btn-add {
+            width: 100%;
+        }
+    }
+</style>
+
+<script>
+	// Função para preencher automaticamente o modal com a sugestão selecionada
+document.addEventListener('DOMContentLoaded', function() {
+    // Adiciona event listeners para os itens de sugestão
+    document.querySelectorAll('.suggestion-item').forEach(item => {
+        item.addEventListener('click', function() {
+            // Obtém o texto da sugestão
+            const promptText = this.querySelector('p').textContent;
+            
+            // Abre o modal
+            openModal('newPromptModal');
+            
+            // Preenche o campo de texto do prompt com a sugestão
+            setTimeout(() => {
+                const textArea = document.getElementById('newPromptText');
+                if (textArea) {
+                    textArea.value = promptText;
+                }
+            }, 300);
+        });
+    });
+});
+    // Sistema de Modal Personalizado
+    document.addEventListener('DOMContentLoaded', function() {
+        // Função para abrir modal
+        window.openModal = function(modalId) {
+            const modal = document.getElementById(modalId);
+            if (!modal) return;
+            
+            modal.style.display = 'flex';
+            document.body.style.overflow = 'hidden'; // Previne rolagem do body
+            
+            // Adiciona classe para animação
+            setTimeout(() => {
+                modal.classList.add('show');
+            }, 10);
+            
+            // Foca no primeiro elemento focável dentro do modal
+            const focusableElements = modal.querySelectorAll('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
+            if (focusableElements.length) {
+                focusableElements[0].focus();
+            }
+        };
+        
+        // Função para fechar modal
+        window.closeModal = function(modalId) {
+            const modal = document.getElementById(modalId);
+            if (!modal) return;
+            
+            modal.classList.remove('show');
+            
+            // Espera a animação terminar antes de esconder
+            setTimeout(() => {
+                modal.style.display = 'none';
+                document.body.style.overflow = ''; // Restaura rolagem do body
+            }, 300);
+        };
+        
+        // Fecha modal ao clicar no backdrop
+        document.querySelectorAll('.modal-overlay').forEach(modal => {
+            modal.addEventListener('click', function(e) {
+                if (e.target === this) {
+                    closeModal(this.id);
+                }
+            });
+        });
+        
+        // Fecha modal ao pressionar ESC
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                const openModal = document.querySelector('.modal-overlay.show');
+                if (openModal) {
+                    closeModal(openModal.id);
+                }
+            }
+        });
+        
+        // Adiciona event listeners para todos os botões que abrem modais
+        document.querySelectorAll('[data-toggle="modal"]').forEach(button => {
+            const targetId = button.getAttribute('data-target').substring(1); // Remove o # do início
+            button.addEventListener('click', function(event) {
+                event.preventDefault();
+                openModal(targetId);
+            });
+        });
+        
+        // Adiciona event listeners para todos os botões que fecham modais
+        document.querySelectorAll('[data-dismiss="modal"]').forEach(button => {
+            button.addEventListener('click', function() {
+                const modal = this.closest('.modal-overlay');
+                if (modal) {
+                    closeModal(modal.id);
+                }
+            });
+        });
+        
+        // Atualiza a ação do formulário de novo prompt com base no IA selecionado
+        document.getElementById("newPromptForm").addEventListener("submit", function(e) {
+            var iaSelect = document.getElementById("iaSelect");
+            var selectedId = iaSelect.value;
+            // Define a ação para enviar para /new-prompt/<id_ia>
+            this.action = "/new-prompt/" + selectedId;
+        });
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ChatBot</title>
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='img/Logo.webp') }}">
+    <style>
+        :root {
+            --primary: #255267;
+            --primary-dark: #1e4252;
+            --primary-light: #3a6a80;
+            --background: #ffffff;
+            --sidebar-bg: #f8f9fa;
+            --sidebar-hover: #e9ecef;
+            --border-color: #e1e4e8;
+            --text-color: #333333;
+            --text-light: #666666;
+            --transition-speed: 0.3s;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--background);
+            color: var(--text-color);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* Layout Structure */
+        .wrapper {
+            display: flex;
+            min-height: 100vh;
+            position: relative;
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            width: 250px;
+            height: 100vh;
+            background-color: var(--sidebar-bg);
+            border-right: 1px solid var(--primary);
+            position: fixed;
+            top: 0;
+            left: 0;
+            overflow-y: auto;
+            transition: transform var(--transition-speed) ease;
+            z-index: 1000;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.05);
+        }
+
+        /* User Profile Section */
+        .user-profile {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 2rem 1rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .user-profile img {
+            width: 70px;
+            height: 70px;
+    
+            object-fit: cover;
+            
+            padding: 3px;
+            
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .user-profile img:hover {
+            transform: scale(1.05);
+
+        }
+
+        .user-info {
+            margin-top: 1rem;
+            text-align: center;
+            width: 100%;
+        }
+
+        .user-info p {
+            font-weight: 500;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .logout-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background-color: var(--primary-light);
+            color: white;
+            text-decoration: none;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+        }
+
+        .logout-icon:hover {
+            background-color: var(--primary);
+            transform: scale(1.1);
+        }
+
+        /* Navigation Menu */
+        .nav-menu {
+            list-style: none;
+            padding: 1rem 0;
+        }
+
+        .nav-item {
+            margin-bottom: 0.5rem;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1.5rem;
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 500;
+            transition: background-color 0.3s ease, color 0.3s ease;
+            border-left: 3px solid transparent;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            background-color: var(--sidebar-hover);
+            color: var(--primary-dark);
+            border-left: 3px solid var(--primary);
+        }
+
+        .nav-link i {
+            margin-right: 0.75rem;
+            font-size: 1.1rem;
+        }
+
+        /* Main Content Area */
+        .main-content {
+            flex: 1;
+            margin-left: 250px;
+            padding: 2rem;
+            transition: margin-left var(--transition-speed) ease;
+            width: calc(100% - 250px);
+        }
+
+        /* Sidebar Toggle Button */
+        .menu-toggle {
+            display: none;
+            position: fixed;
+            top: 1rem;
+            left: 1rem;
+            z-index: 1100;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 0.5rem;
+            cursor: pointer;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            transition: background-color 0.3s ease;
+        }
+
+        .menu-toggle:hover {
+            background-color: var(--primary-dark);
+        }
+
+        /* Icons */
+        .icon {
+            display: inline-block;
+            width: 1em;
+            height: 1em;
+            vertical-align: -0.125em;
+            fill: currentColor;
+        }
+
+        /* Checkbox Hack for Sidebar Toggle */
+        #sidebar-toggle {
+            display: none;
+        }
+
+        /* Responsive Styles */
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+                width: 280px;
+            }
+
+            .main-content {
+                margin-left: 0;
+                width: 100%;
+            }
+
+            .menu-toggle {
+                display: block;
+            }
+
+            #sidebar-toggle:checked ~ .wrapper .sidebar {
+                transform: translateX(0);
+            }
+
+            #sidebar-toggle:checked ~ .wrapper .main-content {
+                margin-left: 0;
+            }
+
+            /* Overlay when sidebar is open on mobile */
+            #sidebar-toggle:checked ~ .sidebar-overlay {
+                display: block;
+            }
+        }
+
+        /* Overlay for mobile sidebar */
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+        }
+
+        /* SVG Icons */
+        .svg-icon {
+            width: 1.25em;
+            height: 1.25em;
+            display: inline-block;
+            line-height: 1;
+            vertical-align: middle;
+            margin-right: 0.75rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar Toggle Checkbox (Hidden) -->
+    <input type="checkbox" id="sidebar-toggle">
+    
+    <!-- Mobile Menu Toggle Button -->
+    <label for="sidebar-toggle" class="menu-toggle">
+        <svg class="icon" viewBox="0 0 24 24">
+            <path fill="currentColor" d="M3,6H21V8H3V6M3,11H21V13H3V11M3,16H21V18H3V16Z" />
+        </svg>
+    </label>
+    
+    <!-- Overlay for Mobile -->
+    <label for="sidebar-toggle" class="sidebar-overlay"></label>
+    
+    <div class="wrapper">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="user-profile">
+                <img src="{{ url_for('static', filename='img/Logo.webp') }}" alt="Logo">
+                {% if current_user.is_authenticated %}
+                <div class="user-info">
+                    <p>
+                        {{ current_user.name }} {{ current_user.lastname }}
+                        <a href="{{ url_for('logout') }}" class="logout-icon" title="Logout">
+                            <svg class="icon" viewBox="0 0 24 24">
+                                <path fill="currentColor" d="M16,17V14H9V10H16V7L21,12L16,17M14,2A2,2 0 0,1 16,4V6H14V4H5V20H14V18H16V20A2,2 0 0,1 14,22H5A2,2 0 0,1 3,20V4A2,2 0 0,1 5,2H14Z" />
+                            </svg>
+                        </a>
+                    </p>
+                </div>
+                {% endif %}
+            </div>
+            
+            <nav>
+                <ul class="nav-menu">
+                    <li class="nav-item">
+                        <a href="{{ url_for('index') }}" class="nav-link">
+                            <svg class="svg-icon" viewBox="0 0 24 24">
+                                <path fill="currentColor" d="M21,15.61L19.59,17L14.58,12L19.59,7L21,8.39L17.44,12L21,15.61M3,6H16V8H3V6M3,13V11H13V13H3M3,18V16H16V18H3Z" />
+                            </svg>
+                            IAs
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ url_for('get_prompts_ia') }}" class="nav-link">
+                            <svg class="svg-icon" viewBox="0 0 24 24">
+                                <path fill="currentColor" d="M20,2H4A2,2 0 0,0 2,4V22L6,18H20A2,2 0 0,0 22,16V4A2,2 0 0,0 20,2M20,16H6L4,18V4H20" />
+                            </svg>
+                            Prompts
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </aside>
+        
+        <!-- Main Content -->
+        <main class="main-content">
+            {% block content %}{% endblock %}
+        </main>
+    </div>
+</body>
+</html>

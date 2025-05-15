@@ -1,0 +1,92 @@
+/* Estilos personalizados para identidade visual */
+body {
+    background-color: #fff;
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+/* Sidebar fixa com altura total da tela */
+#sidebar-wrapper {
+    background-color: #f8f9fa;
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    width: 250px;
+    overflow-y: auto;
+    border-right: 1px solid #255267;
+    transition: all 0.3s ease;
+}
+.sidebar-heading {
+    font-weight: bold;
+    color: #255267;
+    padding: 1rem;
+}
+.list-group-item {
+    background-color: #f8f9fa;
+    color: #255267;
+    border: none;
+    padding: 10px;
+    cursor: pointer;
+}
+
+.list-group-item:hover {
+    background-color: #e9ecef;
+    color: #255267;
+}
+/* Ajuste do conteúdo da página para não ficar atrás da sidebar */
+#page-content-wrapper {
+    margin-left: 250px;
+    width: calc(100% - 250px);
+    transition: all 0.3s ease;
+    padding: 20px;
+}
+/* Estado toggled: sidebar escondida */
+#wrapper.toggled #sidebar-wrapper {
+    margin-left: -250px;
+}
+#wrapper.toggled #page-content-wrapper {
+    margin-left: 0;
+    width: 100%;
+}
+/* Navbar personalizada */
+.navbar-light {
+    background-color: #fff;
+    border-bottom: 1px solid #255267;
+    padding: 10px;
+}
+/* Botões com a cor de destaque */
+.btn-primary {
+    background-color: #255267;
+    border: none;
+    color: #fff;
+    padding: 10px 20px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+.btn-primary:hover {
+    background-color: #1e4252;
+}
+.user {
+    width: 100%;
+    align-items: center;
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+}
+/* Responsividade para dispositivos menores */
+@media (max-width: 768px) {
+    #sidebar-wrapper {
+        width: 100%;
+        height: auto;
+        position: relative;
+    }
+    #page-content-wrapper {
+        margin-left: 0;
+        width: 100%;
+    }
+    #wrapper.toggled #sidebar-wrapper {
+        margin-left: -100%;
+    }
+}
