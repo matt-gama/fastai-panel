@@ -12,7 +12,7 @@ services:
       - FERNET_KEY=8iKG44o_iy7RiQ0uKslnFJ3RuqcFsDFfg7QmaC1kjC4=
       - HOST_API=https://evolution-evolution.6l3lit.easypanel.host/
       - API_KEY=429683C4C977415CAAFCCE10F7D57E11
-      - URL_WEBHOOK=http://$(hostname -I | awk '{print $1}'):8000/webhook
+      - URL_WEBHOOK=http://$(hostname -I | awk '{print $1}'):8001/webhook
     ports:
       - "5000:5000"
 
@@ -21,14 +21,14 @@ services:
     working_dir: /app
     volumes:
       - ./backend:/app
-    command: uvicorn app.main:app --host 0.0.0.0 --port 8000
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8001
     environment:
       - DATABASE_URL=postgresql://postgres.pnauqlmifcednipdbgda:uVCJ1hIC9onIrBnh@aws-0-sa-east-1.pooler.supabase.com:6543/postgres
       - FERNET_KEY=8iKG44o_iy7RiQ0uKslnFJ3RuqcFsDFfg7QmaC1kjC4=
       - HOST_API=https://evolution-evolution.6l3lit.easypanel.host/
       - API_KEY=429683C4C977415CAAFCCE10F7D57E11
     ports:
-      - "8000:8000"
+      - "8001:8001"
 
   nginx:
     image: nginx:latest
