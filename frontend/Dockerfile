@@ -14,4 +14,4 @@ ENV FERNET_KEY=8iKG44o_iy7RiQ0uKslnFJ3RuqcFsDFfg7QmaC1kjC4=
 ENV HOST_API=https://evolution-evolution.6l3lit.easypanel.host/
 ENV API_KEY=429683C4C977415CAAFCCE10F7D57E11
 
-CMD ["flask run", "--host=0.0.0.0", "--port=5000"]
+CMD ["flask", "run", "--host=0.0.0.0", "--port=5000"]
