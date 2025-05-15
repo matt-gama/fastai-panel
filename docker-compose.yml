@@ -7,6 +7,8 @@ services:
       dockerfile: Dockerfile
     ports:
       - "5000:5000"
+    environment:
+      - URL_WEBHOOK=http://134.195.90.65:8001/webhook
 
   backend:
     build:
