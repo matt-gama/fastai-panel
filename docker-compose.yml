@@ -2,34 +2,20 @@ version: '3.8'
 
 services:
   frontend:
-    image: python:3.8
-    working_dir: /app
-    volumes:
-      - ./frontend:/app
-    command: sh -c "pip install -r /app/requirements.txt && flask run --host=0.0.0.0 --port=5000"
-    environment:
-      - DATABASE_URL=postgresql://postgres.pnauqlmifcednipdbgda:uVCJ1hIC9onIrBnh@aws-0-sa-east-1.pooler.supabase.com:6543/postgres
-      - FERNET_KEY=8iKG44o_iy7RiQ0uKslnFJ3RuqcFsDFfg7QmaC1kjC4=
-      - HOST_API=https://evolution-evolution.6l3lit.easypanel.host/
-      - API_KEY=429683C4C977415CAAFCCE10F7D57E11
-      - URL_WEBHOOK=http://$(hostname -I | awk '{print $1}'):8001/webhook
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
     ports:
       - "5000:5000"
+    environment:
+      - URL_WEBHOOK=http://${HOST_IP:-localhost}:8001/webhook
 
   backend:
-    image: python:3.8
-    working_dir: /app
-    volumes:
-      - ./backend:/app
-    command: sh -c "pip install -r /app/requirements.txt && uvicorn app.main:app --host 0.0.0.0 --port 8000"
-    environment:
-      - DATABASE_URL=postgresql://postgres.pnauqlmifcednipdbgda:uVCJ1hIC9onIrBnh@aws-0-sa-east-1.pooler.supabase.com:6543/postgres
-      - FERNET_KEY=8iKG44o_iy7RiQ0uKslnFJ3RuqcFsDFfg7QmaC1kjC4=
-      - HOST_API=https://evolution-evolution.6l3lit.easypanel.host/
-      - API_KEY=429683C4C977415CAAFCCE10F7D57E11
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
     ports:
       - "8001:8001"
-
 
 networks:
   default:
