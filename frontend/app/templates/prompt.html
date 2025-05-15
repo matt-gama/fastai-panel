@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block content %}
 <div class="prompts-container">
-	{% if prompts|length < 0 %}
+
     <div class="dashboard-header">
         <h1>Lista de Prompts</h1>
         <button class="btn-add" data-toggle="modal" data-target="#newPromptModal">
@@ -11,7 +11,7 @@
             <span>Adicionar Novo Prompt</span>
         </button>
     </div>
-	{% endif %}
+
 
     <!-- Modal para Adicionar Novo Prompt -->
     <div class="modal-overlay" id="newPromptModal" tabindex="-1" aria-labelledby="newPromptModalLabel" aria-hidden="true">
