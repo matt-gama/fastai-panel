@@ -157,6 +157,21 @@ def send_message_audio(instance:str, lead_phone:str, file_data:str) -> dict:
     data = post_request(url, body)
     return data
 
+def send_message_file(instance:str, lead_phone:str) -> dict:
+    url = host+'message/sendMedia/'+instance
+
+    body = {
+        "number": lead_phone,
+        "mediatype": "image",
+        "mimetype": "image/png",
+        "caption": "Olha essa casa aqui",
+        "media": "https://www.decorfacil.com/wp-content/uploads/2023/08/20240103casas-bonitas-e-modernas-1.jpg",
+        "fileName": "Imagem.png"
+    }
+    
+    data = post_request(url, body)
+    return data
+
 def post_request(url:str, body:dict, max_retries:int=5, wait_seconds:int=5) -> dict:
     # Inicializando variáveis
     attempt = 0

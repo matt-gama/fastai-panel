@@ -1,10 +1,19 @@
 import random
+import redis 
 from ..database.manipulations import ia_manipulations, lead_manioulations
 from app.apis.evolution import *
 from app.service.llm_response import IAResponse
 from app.service.quebra_mensagens import quebrar_mensagens, calculate_typing_delay
 from app.service.queue_manager import get_phone_lock
 from app.apis.elevenlabs import ElevenlabsStrategy
+
+host_redis = "host aqui"
+port_redis = 6379
+password = "password aqui"
+r = redis.Redis(host=host_redis, port=port_redis, username="default", password=password, db=0)
+
+
+
 
 def process_webhook_data(data: dict):
     """
@@ -32,21 +41,42 @@ def process_webhook_data(data: dict):
         lead_name = data['data']['pushName']
         lead_phone = data["data"]["key"]["remoteJid"].split('@')[0]
         unique_token = f"{ia_infos.token_ia}_{lead_phone}"
+
         # Obtém o lock para o lead_phone e o adquire
         lock = get_phone_lock(lead_phone)
         
         with lock:
-            message_atual_lead = {
-                "role": "user",
-                "name": lead_name,
-                "content":message_content
-            }
+            timeout = data.get("data").get("key").get("fromMe", False)
+            if timeout:
+                message_atual_lead = {
+                    "role": "assistant",
+                    "name": "Humano",
+                    "content":message_content
+                }
+            else:
+                message_atual_lead = {
+                    "role": "user",
+                    "name": lead_name,
+                    "content":message_content
+                }
             unique_token = f"{ia_infos.token_ia}_{lead_phone}"
             
             lead_db = lead_manioulations.filter_lead(unique_token, message_atual_lead)
             if not lead_db:
                 lead_db = lead_manioulations.new_lead(ia_infos.id, lead_name, lead_phone, [message_atual_lead], unique_token)
 
+            # Verificando Timeout no lead
+            if timeout:
+                print("Mensagem enviada manualmente interceptando....")
+                r.set(unique_token, "Lead in timeout")
+                r.expire(unique_token, 300)
+                return
+            else:
+                lead_in_timeout = r.get(unique_token)
+                if lead_in_timeout:
+                    print("Lead ainda esta em timeout interceptando")
+                    return
+                
             if lead_db.bloqueado == False:
                 raise(Exception(f"Lead {lead_db.unique_token} estava bloqueado no banco de dados interceptando mensagem..."))
 
@@ -67,7 +97,9 @@ def process_webhook_data(data: dict):
             response_lead = llm.generate_response(message_content, historico)
             if not response_lead:
                 raise(Exception("Erro ao gerar resposta da llm"))
+
             type_of_send = "text"
+
             # Verifica se precisa enviar audio
             try:
                 probabilidade_audio = ia_infos.ia_config.probabilidade_audio
@@ -118,6 +150,11 @@ def process_webhook_data(data: dict):
                     
             elif type_of_send == "audio":
                 response_canal = send_message_audio(instance, lead_phone, audio_binary)
+                if response_canal.get("status_code") not in [200, 201]:
+                    raise(Exception(f"Erro ao enviar mensagem ao lead > {response_canal}"))
+                
+            elif type_of_send == "material":
+                response_canal = send_message_file(instance, lead_phone)
                 if response_canal.get("status_code") not in [200, 201]:
                     raise(Exception(f"Erro ao enviar mensagem ao lead > {response_canal}"))
 

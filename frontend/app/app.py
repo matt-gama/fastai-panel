@@ -208,7 +208,7 @@ def create_ia():
 
             host = os.getenv("HOST_API")
             api_key = os.getenv("API_KEY")
-            url_webhook = os.getenv("URL_WEBHOOK", "")
+            url_webhook = os.getenv("URL_WEBHOOK") # URL AQUI
 
             url = f"{host}/instance/create"
 
@@ -496,32 +496,32 @@ def login():
     
     return render_template('login.html')
 
-# @app.route('/register', methods=['GET', 'POST'])
-# def register():
-#     if request.method == 'POST':
-#         name = request.form.get('name')
-#         lastname = request.form.get('lastname')
-#         email = request.form.get('email')
-#         password = request.form.get('password')
-        
-#         user_exists = Users.query.filter_by(email=email).first()
-#         if user_exists:
-#             return render_template('register.html', error="Email already registered")
-        
-#         hashed_password = generate_password_hash(password, method='sha256')
-#         new_user = Users(
-#             name=name,
-#             lastname=lastname,
-#             email=email,
-#             password=hashed_password
-#         )
-        
-#         db.session.add(new_user)
-#         db.session.commit()
-        
-#         return redirect(url_for('login'))
-    
-#     return render_template('register.html')
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    if request.method == 'POST':
+        name = request.form.get('name')
+        lastname = request.form.get('lastname')
+        email = request.form.get('email')
+        password = request.form.get('password')
+      
+        user_exists = Users.query.filter_by(email=email).first()
+        if user_exists:
+            return render_template('register.html', error="Email already registered")
+      
+        hashed_password = generate_password_hash(password, method='sha256')
+        new_user = Users(
+            name=name,
+            lastname=lastname,
+            email=email,
+            password=hashed_password
+        )
+      
+        db.session.add(new_user)
+        db.session.commit()
+      
+        return redirect(url_for('login'))
+  
+    return render_template('register.html')
 
 @app.route('/logout')
 @login_required
